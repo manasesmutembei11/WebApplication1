@@ -1,0 +1,80 @@
+﻿@model Person.DTOs.SubmitOrderRequestDTO
+
+@{
+    ViewData["Title"] = "Test PesaPal Actions";
+}
+
+<h1>Test PesaPal Actions</h1>
+
+<div>
+    <h2>Submit Order Request</h2>
+    <form id="submitOrderForm">
+        <label for="id">ID:</label>
+        <input type="text" id="id" name="id" required><br>
+
+        <label for="currency">Currency:</label>
+        <input type="text" id="currency" name="currency" required><br>
+
+        <label for="amount">Amount:</label>
+        <input type="number" id="amount" name="amount" step="0.01" required><br>
+
+        <label for="description">Description:</label>
+        <input type="text" id="description" name="description" required><br>
+
+        <label for="callbackUrl">Callback URL:</label>
+        <input type="text" id="callbackUrl" name="callbackUrl" required><br>
+
+        <label for="cancellationUrl">Cancellation URL:</label>
+        <input type="text" id="cancellationUrl" name="cancellationUrl" required><br>
+
+        <label for="notificationId">Notification ID:</label>
+        <input type="text" id="notificationId" name="notificationId" required><br>
+
+        <label for="BillingAddress">Billing Address:</label>
+        <input type="text" id="billingAddress" name="billingAddress" required><br>
+
+        <!-- Assuming BillingAddress is another complex object with its own properties -->
+        <!-- You can choose to include or exclude it based on your requirements -->
+        <!-- If BillingAddress is included, you may need to provide input fields for its properties as well -->
+
+        <button type="submit">Submit Order Request</button>
+    </form>
+    <div id="submitOrderResponse"></div>
+</div>
+
+<script>
+    document.getElementById('submitOrderForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        var formData = {
+            id: document.getElementById('id').value,
+            currency: document.getElementById('currency').value,
+            amount: parseFloat(document.getElementById('amount').value),
+            description: document.getElementById('description').value,
+            callbackUrl: document.getElementById('callbackUrl').value,
+            cancellationUrl: document.getElementById('cancellationUrl').value,
+            notificationId: document.getElementById('notificationId').value,
+            billingAddress: document.getElementById('notificationId').value,
+
+            // Add BillingAddress properties if needed
+        };
+        submitOrderRequest(formData);
+    });
+
+    function submitOrderRequest(formData) {
+        fetch('/api/PesaPal/SubmitOrderRequest', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('submitOrderResponse').innerText = JSON.stringify(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('submitOrderResponse').innerText = 'Error submitting order request';
+            });
+    }
+</script>

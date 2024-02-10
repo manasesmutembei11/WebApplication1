@@ -1,0 +1,43 @@
+﻿@using Person.Controllers
+@model IEnumerable<Person.Models.People>
+
+<h2>Search Results</h2>
+
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Country</th>
+                <th>Date of Birth</th>
+                <th>Status</th>
+                <th>Payment Number</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var person in Model)
+            {
+                <tr>
+                    <td>@person.Id</td>
+                    <td>@person.FirstName</td>
+                    <td>@person.LastName</td>
+                    <td>@person.Email</td>
+                    <td>@person.Phone</td>
+                    <td>@person.Country</td>
+                    <td>@person.DateOfBirth</td>
+                    <td>@person.Status</td>
+                    <td>@person.PaymentNumber</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No results found.</p>
+}
