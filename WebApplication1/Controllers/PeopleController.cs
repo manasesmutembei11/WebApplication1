@@ -1,25 +1,27 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Web.Configuration;
+using System.Web.Mvc;
 using Newtonsoft.Json;
-using Person.Data;
-using Person.Models;
-using Person.Repositories;
-using Person.DTOs;
+using WebApplication1.Models;
+using WebApplication1.Repository.IRepository;
+using WebApplication1.DTOs.PesapalDTOs;
 using System.Net.Http.Headers;
 using System.Net.Http;
 using System.Text;
-using Person.PesaPalServices;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using WebApplication1.Service.IService;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using System.Data.Entity.Infrastructure;
+using System;
 
-namespace Person.Controllers
+namespace WebApplication1.Controllers
 {
     public class PeopleController : Controller
     {
-        private readonly PeopleRepository _repository;
+        private readonly IPeopleRepository _repository;
         private readonly IPesaPalService _pesaPalService;
         private readonly IConfiguration _configuration;
-        public PeopleController(PeopleRepository repository, IPesaPalService pesaPalService, IConfiguration configuration)
+        public PeopleController(IPeopleRepository repository, IPesaPalService pesaPalService, IConfiguration configuration)
         {
             _repository = repository;
             _pesaPalService = pesaPalService; 
@@ -35,17 +37,17 @@ namespace Person.Controllers
             int pageSize = 5;
             int currentPageIndex = page.HasValue ? page.Value - 1 : 0;
             var pagedList = await _repository.GetPagedPeopleAsync(currentPageIndex, page.Value, pageSize);
-            return View(pagedList);
+            return (IActionResult)View(pagedList);
         }
 
-        [HttpGet("search")]
+        [HttpGet, ActionName("Search")]
         public async Task<IActionResult> SearchPeople(string searchString)
         {
             var person = string.IsNullOrEmpty(searchString)
                 ? await _repository.GetPeopleAsync()
                 : await _repository.SearchPeopleAsync(searchString);
 
-            return View(person);
+            return (IActionResult)View(person);
         }
 
 
@@ -56,22 +58,22 @@ namespace Person.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return (IActionResult)HttpNotFound();
             }
 
             var person = await _repository.GetPersonByIdAsync(id.Value);
             if (person == null)
             {
-                return NotFound();
+                return (IActionResult)HttpNotFound();
             }
 
-            return View(person);
+            return (IActionResult)View(person);
         }
 
         // GET: People/Create
         public IActionResult Create()
         {
-            return View();
+            return (IActionResult)View();
         }
 
         [HttpPost]
@@ -81,9 +83,9 @@ namespace Person.Controllers
             if (ModelState.IsValid)
             {
                 await _repository.AddPersonAsync(person);
-                return RedirectToAction(nameof(Index));
+                return (IActionResult)RedirectToAction(nameof(Index));
             }
-            return View(person);
+            return (IActionResult)View(person);
         }
 
 
@@ -94,16 +96,16 @@ namespace Person.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return (IActionResult)HttpNotFound();
             }
 
             var person = await _repository.GetPersonByIdAsync(id.Value);
             if (person == null)
             {
-                return NotFound();
+                return (IActionResult)HttpNotFound();
             }
 
-            return View(person);
+            return (IActionResult)View(person);
         }
 
         [HttpPost]
@@ -112,7 +114,7 @@ namespace Person.Controllers
         {
             if (id != person.Id)
             {
-                return NotFound();
+                return (IActionResult)HttpNotFound();
             }
 
             if (ModelState.IsValid)
@@ -125,16 +127,16 @@ namespace Person.Controllers
                 {
                     if (!_repository.PersonExists(person.Id))
                     {
-                        return NotFound();
+                        return (IActionResult)HttpNotFound();
                     }
                     else
                     {
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return (IActionResult)RedirectToAction(nameof(Index));
             }
-            return View(person);
+            return (IActionResult)View(person);
         }
 
         // GET: People/Delete/5
@@ -142,16 +144,16 @@ namespace Person.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return (IActionResult)HttpNotFound();
             }
 
             var person = await _repository.GetPersonByIdAsync(id.Value);
             if (person == null)
             {
-                return NotFound();
+                return (IActionResult)HttpNotFound();
             }
 
-            return View(person);
+            return (IActionResult)View(person);
         }
 
         [HttpPost, ActionName("Delete")]
@@ -159,7 +161,7 @@ namespace Person.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _repository.DeletePersonAsync(id);
-            return RedirectToAction(nameof(Index));
+            return (IActionResult)RedirectToAction(nameof(Index));
         }
 
         private bool PersonExists(int id)
@@ -170,18 +172,18 @@ namespace Person.Controllers
 
         public async Task<IActionResult> Payment(int? id)
         {
-            string? consumerKey = _configuration["AuthRequest:consumer_key"];
-            string? consumerSecret = _configuration["AuthRequest:consumer_secret"];
+            string consumerKey = _configuration["AuthRequest:consumer_key"];
+            string consumerSecret = _configuration["AuthRequest:consumer_secret"];
 
             if (id == null)
             {
-                return NotFound();
+                return (IActionResult)HttpNotFound();
             }
 
             var person = await _repository.GetPersonByIdAsync(id.Value);
             if (person == null)
             {
-                return NotFound();
+                return (IActionResult)HttpNotFound();
             }
             //Get token
             var authResponse = await _pesaPalService.RequestTokenAsync(consumerKey, consumerSecret);
@@ -208,20 +210,20 @@ namespace Person.Controllers
             var paymentUrl = orderResponse.RedirectUrl;
             person.PaymentNumber = orderResponse.OrderTrackingId;
             ViewBag.PaymentUrl = paymentUrl;
-            return View();
+            return (IActionResult)View();
 
         }
 
 
         public async Task<IActionResult> Success(int id, string orderTrackingId, string orderMerchantReference)
         {
-            string? consumerKey = _configuration["AuthRequest:consumer_key"];
-            string? consumerSecret = _configuration["AuthRequest:consumer_secret"];
+            string consumerKey = _configuration["AuthRequest:consumer_key"];
+            string consumerSecret = _configuration["AuthRequest:consumer_secret"];
             // Get the person by id
             var person = await _repository.GetPersonByIdAsync(id);
             if (person == null)
             {
-                return NotFound();
+                return (IActionResult)HttpNotFound();
             }
 
             // Get the transaction status from PesaPal
@@ -251,13 +253,13 @@ namespace Person.Controllers
             person.PaymentNumber = orderTrackingId;
             await _repository.UpdatePersonAsync(person);
 
-            return RedirectToAction("Index");
+            return (IActionResult)RedirectToAction("Index");
         }
 
         public IActionResult Failed(Guid id)
         {
             // Handle failed transaction
-            return RedirectToAction("Index");
+            return (IActionResult)RedirectToAction("Index");
         }
 
 

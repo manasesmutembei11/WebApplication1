@@ -1,10 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Person.Data;
-using Person.Models;
+﻿
+using WebApplication1.Models;
 using cloudscribe.Pagination.Models;
-using Microsoft.AspNetCore.Mvc;
+using System.Web.Mvc;
+using WebApplication1.Repository.IRepository;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Threading;
 
-namespace Person.Repositories
+
+namespace WebApplication1.Repository.Repositories
 {
     public class PeopleRepository : IPeopleRepository
     {

@@ -1,7 +1,8 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Text.Json.Serialization;
 
-namespace Person.DTOs
+namespace WebApplication1.DTOs.PesapalDTOs
 {
     public class RequestDTOs
     {
@@ -10,15 +11,15 @@ namespace Person.DTOs
     {
         [JsonProperty("consumer_key")]
         
-        public string? ConsumerKey { get; set; }
+        public string ConsumerKey { get; set; }
         [JsonProperty("consumer_secret")]
-        public string? ConsumerSecret { get; set; }
+        public string ConsumerSecret { get; set; }
     }
 
     public class RegisterIPNRequestDTO
     {
-        public string? Url { get; set; }
-        public string? IpnNotificationType { get; set; }
+        public string Url { get; set; }
+        public string IpnNotificationType { get; set; }
     }
 
     public class SubmitOrderRequestDTO

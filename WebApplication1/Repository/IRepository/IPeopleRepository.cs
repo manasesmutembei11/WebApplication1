@@ -1,8 +1,11 @@
 ﻿using cloudscribe.Pagination.Models;
 using Microsoft.AspNetCore.Mvc;
-using Person.Models;
+using WebApplication1.Models;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Threading;
 
-namespace Person.Repositories
+namespace WebApplication1.Repository.IRepository
 {
     public interface IPeopleRepository 
     {

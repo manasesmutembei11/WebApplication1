@@ -1,10 +1,15 @@
 ﻿using Newtonsoft.Json;
-using Person.DTOs;
-using Person.PesaPalRepository;
+using WebApplication1.DTOs.PesapalDTOs;
 using System.Net.Http.Headers;
 using System.Text;
+using WebApplication1.Repository.IRepository;
+using System.Threading;
+using System;
+using System.Threading.Tasks;
+using System.Net.Http;
+using System.Collections.Generic;
 
-namespace Person.PesaPalRepository
+namespace WebApplication1.Repository.Repositories
 {
     public class PesaPalRepository : IPesaPalRepository
     {

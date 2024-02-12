@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
+using System;
 
-namespace Person.DTOs
+namespace WebApplication1.DTOs.PesapalDTOs
 {
     public class ResponseDTOs
     {
@@ -8,33 +9,33 @@ namespace Person.DTOs
 
     public class PesapalErrorObject
     {
-        public string? Type { get; set; }
-        public string? Code { get; set; }
-        public string? Message { get; set; }
+        public string Type { get; set; }
+        public string Code { get; set; }
+        public string Message { get; set; }
     }
 
 
     public class PesapalAuthResponse
     {
         [JsonProperty("token")]
-        public string? Token { get; set; }
+        public string Token { get; set; }
         [JsonProperty("expiryDate")]
-        public string? ExpiryDate { get; set; }
+        public string ExpiryDate { get; set; }
         [JsonProperty("error")]
-        public PesapalErrorObject? Error { get; set; }
+        public PesapalErrorObject Error { get; set; }
         [JsonProperty("status")]
-        public string? Status { get; set; }
+        public string Status { get; set; }
         [JsonProperty("message")]
-        public string? Message { get; set; }
+        public string Message { get; set; }
     }
 
     public class RegisterIPNResponseDTO
     {
-        public string? Url { get; set; }
-        public string? CreatedDate { get; set; }
-        public string? IpnId { get; set; }
+        public string Url { get; set; }
+        public string CreatedDate { get; set; }
+        public string IpnId { get; set; }
         public int? Error { get; set; }
-        public string? Status { get; set; }
+        public string Status { get; set; }
     }
 
     public class GetIPNListResponseDTO

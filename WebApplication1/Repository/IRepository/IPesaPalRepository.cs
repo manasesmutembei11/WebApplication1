@@ -1,7 +1,9 @@
 ﻿
-using Person.DTOs;
+using WebApplication1.DTOs.PesapalDTOs;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace Person.PesaPalRepository
+namespace WebApplication1.Repository.IRepository
 {
     public interface IPesaPalRepository
     {

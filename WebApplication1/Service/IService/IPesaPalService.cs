@@ -1,7 +1,9 @@
 ﻿
-using Person.DTOs;
+using WebApplication1.DTOs.PesapalDTOs;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
-namespace Person.PesaPalServices
+namespace WebApplication1.Service.IService
 {
     public interface IPesaPalService
     {
