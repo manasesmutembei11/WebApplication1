@@ -9,12 +9,14 @@ using System.Web.Mvc;
 using WebApplication1.Data;
 using WebApplication1.Controllers;
 using WebApplication1.Models;
+using WebApplication1.Repository.IRepository;
 
 namespace WebApplication1.Controllers
 {
     public class PeopleController : Controller
     {
-        private WebApplication1Context db = new WebApplication1Context();
+       public PeopleController { }
+       
 
         // GET: People
         public ActionResult Index()

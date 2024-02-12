@@ -26,6 +26,7 @@ namespace WebApplication1.Repository.Repositories
         public async Task<PagedResult<People>> GetPagedPeopleAsync(int offset, int page, int pageSize, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
+ 
 
             var query = _context.People.OrderBy(x => x.FirstName)
                 .Select(p => p)
