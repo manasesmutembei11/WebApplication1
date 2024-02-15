@@ -1,4 +1,6 @@
-﻿@model IEnumerable<WebApplication1.Models.People>
+﻿@using MvcPaging;
+@using PagedList.Mvc;
+@model IPagedList<WebApplication1.Models.People>
 
 @{
     ViewBag.Title = "Index";
@@ -12,28 +14,28 @@
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.FirstName)
+            FirstName
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.LastName)
+            LastName
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Email)
+            Email
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Phone)
+            Phone
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Country)
+            Country
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.DateOfBirth)
+            DateOfBirth
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Status)
+            Status
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.PaymentNumber)
+            PaymentNumber
         </th>
         <th></th>
     </tr>
@@ -73,3 +75,7 @@
 }
 
 </table>
+
+<div class="pager">
+    @Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)
+</div>

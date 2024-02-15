@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using WebApplication1.Controllers;
 using System.Threading;
 using System.Data.Entity.Migrations;
+using MvcPaging;
+using PagedList.Mvc;
 
 namespace WebApplication1.Repository.Repositories
 {
@@ -23,7 +25,7 @@ namespace WebApplication1.Repository.Repositories
             _context = context;
         }
 
-        public async Task<PagedResult<People>> GetPagedPeopleAsync(int offset, int page, int pageSize, CancellationToken cancellationToken = default(CancellationToken))
+     /*  public async Task<PagedList<People>> GetPagedPeopleAsync(int offset, int page, int pageSize, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
  
@@ -32,17 +34,17 @@ namespace WebApplication1.Repository.Repositories
                 .Select(p => p)
                 .Skip(offset)
                 .Take(pageSize);
-
-            var result = new PagedResult<People>
+            var result = new PagedList<People>
             {
-                TotalItems = await _context.People.CountAsync(),
+                TotalItemCount = await _context.People.CountAsync(),
                 PageNumber = page,
                 PageSize = pageSize,
-                Data = await query.ToListAsync()
+                Source = await query.ToListAsync()
             };
 
-            return result;
-        }
+
+            return result; 
+        } */
 
         public async Task<List<People>> GetPeopleAsync()
         {

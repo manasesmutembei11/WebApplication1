@@ -9,108 +9,121 @@ using WebApplication1.DTOs.PesapalDTOs;
 using WebApplication1.Models;
 using WebApplication1.Repository.Repositories;
 using WebApplication1.Service.IService;
+using WebApplication1.Repository.IRepository;
+using MvcPaging;
 
 namespace WebApplication1.Controllers
 {
     public class PeopleController : Controller
     {
-        private readonly PeopleRepository _repository;
+        private readonly IPeopleRepository _repository;
         private readonly IPesaPalService _pesaPalService;
-        private readonly IConfiguration _configuration;
-        public PeopleController(PeopleRepository repository, IPesaPalService pesaPalService, IConfiguration configuration)
+        IConfiguration _configuration;
+        public PeopleController(IPeopleRepository repository, IPesaPalService pesaPalService)
         {
             _repository = repository;
             _pesaPalService = pesaPalService;
-            _configuration = configuration;
+            
         }
 
 
 
         // GET: People
-        public async Task<IActionResult> Index(int? page)
+        public async Task<ActionResult> Index(int? page)
         {
-            page = page ?? 1;
-            int pageSize = 5;
-            int currentPageIndex = page.HasValue ? page.Value - 1 : 0;
-            var pagedList = await _repository.GetPagedPeopleAsync(currentPageIndex, page.Value, pageSize);
-            return (IActionResult)View(pagedList);
+            var peopleList = await _repository.GetPeopleAsync();
+
+            int pageSize = 10; 
+            int pageNumber = (page ?? 1); 
+
+            
+            var pagedPeopleList = peopleList.ToPagedList(pageNumber, pageSize);
+
+            return View(pagedPeopleList);
+
+            /*  page = page ?? 1;
+               int pageSize = 5
+               int currentPageIndex = page.HasValue ? page.Value - 1 : 0;
+               var pagedList = await _repository.GetPagedPeopleAsync(currentPageIndex, page.Value, pageSize);
+               return View(pagedList);
+            */
         }
 
-        [HttpGet("search")]
-        public async Task<IActionResult> SearchPeople(string searchString)
+        [HttpGet, ActionName("search")]
+        public async Task<ActionResult> SearchPeople(string searchString)
         {
             var person = string.IsNullOrEmpty(searchString)
                 ? await _repository.GetPeopleAsync()
                 : await _repository.SearchPeopleAsync(searchString);
 
-            return (IActionResult)View(person);
+            return View(person);
         }
 
 
 
         // GET: People/Details/5
 
-        public async Task<IActionResult> Details(int? id)
+        public async Task<ActionResult> Details(int? id)
         {
             if (id == null)
             {
-                return (IActionResult)HttpNotFound();
+                return (ActionResult)HttpNotFound();
             }
 
             var person = await _repository.GetPersonByIdAsync(id.Value);
             if (person == null)
             {
-                return (IActionResult)HttpNotFound();
+                return (ActionResult)HttpNotFound();
             }
 
-            return (IActionResult)View(person);
+            return View(person);
         }
 
         // GET: People/Create
-        public IActionResult Create()
+        public ActionResult Create()
         {
-            return (IActionResult)View();
+            return (ActionResult)View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,Email,Phone,Country,DateOfBirth")] People person)
+        public async Task<ActionResult> Create([Bind(Include ="Id,FirstName,LastName,Email,Phone,Country,DateOfBirth")] People person)
         {
             if (ModelState.IsValid)
             {
                 await _repository.AddPersonAsync(person);
-                return (IActionResult)RedirectToAction(nameof(Index));
+                return (ActionResult)RedirectToAction(nameof(Index));
             }
-            return (IActionResult)View(person);
+            return (ActionResult)View(person);
         }
 
 
 
         // GET: People/Edit/5
 
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<ActionResult> Edit(int? id)
         {
             if (id == null)
             {
-                return (IActionResult)HttpNotFound();
+                return (ActionResult)HttpNotFound();
             }
 
             var person = await _repository.GetPersonByIdAsync(id.Value);
             if (person == null)
             {
-                return (IActionResult)HttpNotFound();
+                return (ActionResult)HttpNotFound();
             }
 
-            return (IActionResult)View(person);
+            return (ActionResult)View(person);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,firstName,lastName,email,phone,country,dateOfBirth")] People person)
+        public async Task<ActionResult> Edit(int id, [Bind(Include = "Id,firstName,lastName,email,phone,country,dateOfBirth")] People person)
         {
             if (id != person.Id)
             {
-                return (IActionResult)HttpNotFound();
+                return (ActionResult)HttpNotFound();
             }
 
             if (ModelState.IsValid)
@@ -123,41 +136,41 @@ namespace WebApplication1.Controllers
                 {
                     if (!_repository.PersonExists(person.Id))
                     {
-                        return (IActionResult)HttpNotFound();
+                        return HttpNotFound();
                     }
                     else
                     {
                         throw;
                     }
                 }
-                return (IActionResult)RedirectToAction(nameof(Index));
+                return (ActionResult)RedirectToAction(nameof(Index));
             }
-            return (IActionResult)View(person);
+            return View(person);
         }
 
         // GET: People/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<ActionResult> Delete(int? id)
         {
             if (id == null)
             {
-                return (IActionResult)HttpNotFound();
+                return (ActionResult)HttpNotFound();
             }
 
             var person = await _repository.GetPersonByIdAsync(id.Value);
             if (person == null)
             {
-                return (IActionResult)HttpNotFound();
+                return (ActionResult)HttpNotFound();
             }
 
-            return (IActionResult)View(person);
+            return View(person);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<ActionResult> DeleteConfirmed(int id)
         {
             await _repository.DeletePersonAsync(id);
-            return (IActionResult)RedirectToAction(nameof(Index));
+            return (ActionResult)RedirectToAction(nameof(Index));
         }
 
         private bool PersonExists(int id)
@@ -166,20 +179,20 @@ namespace WebApplication1.Controllers
         }
 
 
-        public async Task<IActionResult> Payment(int? id)
+        public async Task<ActionResult> Payment(int? id)
         {
             string consumerKey = _configuration["AuthRequest:consumer_key"];
             string consumerSecret = _configuration["AuthRequest:consumer_secret"];
 
             if (id == null)
             {
-                return (IActionResult)HttpNotFound();
+                return (ActionResult)HttpNotFound();
             }
 
             var person = await _repository.GetPersonByIdAsync(id.Value);
             if (person == null)
             {
-                return (IActionResult)HttpNotFound();
+                return HttpNotFound();
             }
             //Get token
             var authResponse = await _pesaPalService.RequestTokenAsync(consumerKey, consumerSecret);
@@ -206,12 +219,12 @@ namespace WebApplication1.Controllers
             var paymentUrl = orderResponse.RedirectUrl;
             person.PaymentNumber = orderResponse.OrderTrackingId;
             ViewBag.PaymentUrl = paymentUrl;
-            return (IActionResult)View();
+            return View();
 
         }
 
 
-        public async Task<IActionResult> Success(int id, string orderTrackingId, string orderMerchantReference)
+        public async Task<ActionResult> Success(int id, string orderTrackingId, string orderMerchantReference)
         {
             string consumerKey = _configuration["AuthRequest:consumer_key"];
             string consumerSecret = _configuration["AuthRequest:consumer_secret"];
@@ -219,7 +232,7 @@ namespace WebApplication1.Controllers
             var person = await _repository.GetPersonByIdAsync(id);
             if (person == null)
             {
-                return (IActionResult)HttpNotFound();
+                return HttpNotFound();
             }
 
             // Get the transaction status from PesaPal
@@ -251,13 +264,13 @@ namespace WebApplication1.Controllers
             person.PaymentNumber = orderTrackingId;
             await _repository.UpdatePersonAsync(person);
 
-            return (IActionResult)RedirectToAction("Index");
+            return RedirectToAction("Index");
         }
 
-        public IActionResult Failed(Guid id)
+        public ActionResult Failed(Guid id)
         {
             // Handle failed transaction
-            return (IActionResult)RedirectToAction("Index");
+            return RedirectToAction("Index");
         }
 
 

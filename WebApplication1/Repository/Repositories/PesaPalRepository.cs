@@ -11,11 +11,15 @@ using System.Collections.Generic;
 
 namespace WebApplication1.Repository.Repositories
 {
+    public class PesaPalHttpClient: HttpClient
+    {
+        public PesaPalHttpClient() { }
+    }
     public class PesaPalRepository : IPesaPalRepository
     {
-        private readonly HttpClient _httpClient;
+        private readonly PesaPalHttpClient _httpClient;
 
-        public PesaPalRepository(HttpClient httpClient)
+        public PesaPalRepository(PesaPalHttpClient httpClient)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
